@@ -40,7 +40,7 @@ class RNIapModule(
     ReactContextBaseJavaModule(reactContext),
     PurchasesUpdatedListener {
 
-    private val billingClient: BillingClient = builder.setListener(this)
+    private var billingClient: BillingClient = builder.setListener(this)
         .build()
     private val skus: MutableMap<String, SkuDetails> = mutableMapOf()
     override fun getName(): String {
@@ -91,6 +91,8 @@ class RNIapModule(
             promise.reject(DoobooUtils.E_NOT_PREPARED, "Google Play Services are not available on this device")
             return
         }
+
+        billingClient = BillingClient.newBuilder(reactContext).enablePendingPurchases().setListener(this).build()
 
         billingClient.startConnection(
             object : BillingClientStateListener {
